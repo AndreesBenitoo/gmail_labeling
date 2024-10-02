@@ -1,0 +1,14 @@
+# Ignorar el entorno virtual
+venv/
+
+# Archivos de credenciales sensibles
+credentials.json
+token.json
+
+# Archivos temporales o de entorno
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
+.env
