@@ -1,1 +1,1 @@
-from .authenticate_gmail import authenticate_gmail
+from .gmail_authentication import authenticate_gmail

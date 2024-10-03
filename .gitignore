@@ -2,8 +2,8 @@
 venv/
 
 # Archivos de credenciales sensibles
-credentials.json
-token.json
+config/credentials.json
+config/token.json
 
 # Archivos temporales o de entorno
 __pycache__/
@@ -11,4 +11,4 @@ __pycache__/
 *.pyo
 *.pyd
 .DS_Store
-.env
+config/.env
