@@ -7,7 +7,7 @@ def process_emails(service, categorize_func, labels):
     for message in messages:
         msg = service.users().messages().get(userId='me', id=message['id'], format='full').execute()
         
-        subject = get_email_subject(service, id)
+        subject = get_email_subject(msg)
         # Obtener el cuerpo del correo en texto plano
         content = get_plain_text(msg['payload'])
         
@@ -15,7 +15,6 @@ def process_emails(service, categorize_func, labels):
         content = filter_content(content)
         # Clasificar el correo - chatgpt
         label = categorize_func(subject,content,labels)
-        print(label)
         # Aplicar la etiqueta
         label_email(service, message['id'], label.lower())
 
@@ -72,16 +71,26 @@ def label_email(service, msg_id, label):
     else:
         print(f'Etiqueta "{label}" no encontrada. Asegúrate de que exista en Gmail.')
         
-def get_email_subject(service, message_id):
-    try:
-        msg = service.users().messages().get(userId='me', id=message_id, format='full').execute()
-        headers = msg['payload'].get('headers', [])
-        subject = ''
-        for header in headers:
-            if header['name'].lower() == 'subject':
-                subject = header['value']
-                break
-        return subject
-    except Exception as e:
-        print(f"Error al obtener el asunto del correo {message_id}: {e}")
-        return ''
+import email
+import email.header
+
+def get_email_subject(msg):
+    headers = msg['payload'].get('headers', [])
+    subject = ''
+    for header in headers:
+        if header['name'].lower() == 'subject':
+            subject = header['value']
+            break
+
+    # Decodificar el asunto si es necesario
+    subject_parts = email.header.decode_header(subject)
+    subject_decoded = ''
+    for part, encoding in subject_parts:
+        if isinstance(part, bytes):
+            if encoding:
+                subject_decoded += part.decode(encoding)
+            else:
+                subject_decoded += part.decode('utf-8')
+        else:
+            subject_decoded += part
+    return subject_decoded
