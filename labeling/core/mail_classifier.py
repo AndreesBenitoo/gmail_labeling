@@ -11,3 +11,4 @@ def categorize_email(content):
         if any(keyword in content_lower for keyword in keywords):
             return label
     return 'DESECHO'  # Categoría por defecto si no coincide con ninguna otra
+# esto lo va a hacer la api de chat gpt
