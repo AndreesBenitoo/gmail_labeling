@@ -1,5 +1,6 @@
 import base64
 from bs4 import BeautifulSoup
+from .mail_filter import filter_content
 
 def process_emails(service, categorize_func):
     messages = get_unread_emails(service)
@@ -8,6 +9,9 @@ def process_emails(service, categorize_func):
         
         # Obtener el cuerpo del correo en texto plano
         content = get_plain_text(msg['payload'])
+        
+        #filtrar contenido para eliminar espacios, link y correos electronicos del texto
+        content = filter_content(content)
         print(content)
         # Clasificar el correo - chatgpt
         label = categorize_func(content)
