@@ -28,7 +28,7 @@ def label_email(service, msg_id, label):
 def process_emails(service, categorize_func):
     messages = get_unread_emails(service)
     for message in messages:
-        msg = service.users().messages().get(userId='me', id=message['id'], format='full').execute()
+        msg = service.users().messages().get(userId='me', id=message['id'], format='raw').execute()
         msg_str = base64.urlsafe_b64decode(msg['raw'].encode('ASCII'))
         mime_msg = message_from_bytes(msg_str)
         

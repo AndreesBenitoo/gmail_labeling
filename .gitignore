@@ -1,6 +1,7 @@
 # Ignorar el entorno virtual
 venv/
 
+asssets/logo.png
 # Archivos de credenciales sensibles
 config/credentials.json
 config/token.json
