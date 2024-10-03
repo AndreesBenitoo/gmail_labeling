@@ -2,22 +2,22 @@ import base64
 from bs4 import BeautifulSoup
 from .mail_filter import filter_content
 
-def process_emails(service, categorize_func):
+def process_emails(service, categorize_func, labels):
     messages = get_unread_emails(service)
     for message in messages:
         msg = service.users().messages().get(userId='me', id=message['id'], format='full').execute()
         
+        subject = get_email_subject(service, id)
         # Obtener el cuerpo del correo en texto plano
         content = get_plain_text(msg['payload'])
         
         #filtrar contenido para eliminar espacios, link y correos electronicos del texto
         content = filter_content(content)
-        print(content)
         # Clasificar el correo - chatgpt
-        label = categorize_func(content)
-        
+        label = categorize_func(subject,content,labels)
+        print(label)
         # Aplicar la etiqueta
-        label_email(service, message['id'], label)
+        label_email(service, message['id'], label.lower())
 
 def get_plain_text(payload):
     if 'parts' in payload:
@@ -71,3 +71,17 @@ def label_email(service, msg_id, label):
         print(f'Correo {msg_id} etiquetado como {label}')
     else:
         print(f'Etiqueta "{label}" no encontrada. Asegúrate de que exista en Gmail.')
+        
+def get_email_subject(service, message_id):
+    try:
+        msg = service.users().messages().get(userId='me', id=message_id, format='full').execute()
+        headers = msg['payload'].get('headers', [])
+        subject = ''
+        for header in headers:
+            if header['name'].lower() == 'subject':
+                subject = header['value']
+                break
+        return subject
+    except Exception as e:
+        print(f"Error al obtener el asunto del correo {message_id}: {e}")
+        return ''
